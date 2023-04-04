@@ -46,13 +46,20 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.0"
+        kotlinCompilerExtensionVersion = Versions.composeCompiler
     }
     packagingOptions {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+}
+
+tasks.withType<com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask> {
+    val immaturityLevels = listOf("rc", "cr", "m", "beta", "alpha", "preview") // order is important
+    val immaturityRegexes = immaturityLevels.map { ".*[.\\-]$it[.\\-\\d]*".toRegex(RegexOption.IGNORE_CASE) }
+    fun immaturityLevel(version: String): Int = immaturityRegexes.indexOfLast { version.matches(it) }
+    rejectVersionIf { immaturityLevel(candidate.version) > immaturityLevel(currentVersion) }
 }
 
 dependencies {
@@ -73,6 +80,15 @@ dependencies {
     androidTestImplementation(Dependencies.composeUiTestJunit)
     implementation(Dependencies.compose)
     implementation(Dependencies.composeUiToolingPreview)
-    debugImplementation(Dependencies.composeTooling)
-    debugImplementation(Dependencies.composeUiTestManifest)
+//    debugImplementation(Dependencies.composeTooling)
+//    debugImplementation(Dependencies.composeUiTestManifest)
+    implementation(Dependencies.retrofit)
+    implementation(Dependencies.retrofitGsonConverter)
+
+    implementation(Dependencies.koinCore)
+    implementation(Dependencies.koinCoreExt)
+    implementation(Dependencies.koinAndroid)
+    implementation(Dependencies.composeKoinAndroid)
+//    implementation(Dependencies.koinAndroidExt)
+
 }
